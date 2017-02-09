@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Gamedev - Keyboard Control</title>
+    <style>
+    	*{
+            padding: 0;
+            margin: 0; 
+        }
+    	canvas{ 
+            background: #eee;
+            display: block;
+            margin: 50px auto; 
+        }
+    </style>
+</head>
+<body>
+    <br/><br/>
+    <center><h1>My First Game - By Rahul Semwal</h1></center>
+    <canvas id="myCanvas" width="480" height="320"></canvas>
+</body>
+</html>
+<script>
+	// JavaScript code goes here
+    var canvas = document.getElementById('myCanvas');
+    var ctx = canvas.getContext("2d");
+    var ballRadius,x, y,dx,dy;
+    var init = function(){
+        ballRadius = 10;
+        x = canvas.width/2;
+        y = canvas.height-30;
+        dx = 2; 
+        dy = -2;
+    }
+    init();
+    var drawBall = function(){
+         try{
+            ctx.beginPath();
+            ctx.arc(x,y,ballRadius,0,Math.PI*2);
+            ctx.fillStyle = '#0095DD';
+            ctx.fill();
+            ctx.closePath();
+        }
+        catch(e){
+            console.log('Error : Circle not draw => ' , e);
+        }
+        finally{
+            console.log('Circle drawn');
+        }
+    }
+    var boundaryCheck = function(){
+        if(x+dx > canvas.width-ballRadius || x+dx < ballRadius)
+            dx = -dx;
+        if(y+dy > canvas.height-ballRadius || y+dy < ballRadius)
+            dy = -dy;
+    }
+    var draw = function(){
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawBall();
+            boundaryCheck();
+            x = x + dx;
+            y = y + dy;
+   }
+    setInterval(draw,10);
+</script>

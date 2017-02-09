@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Gamedev - Keyboard Control</title>
+    <style>
+    	*{
+            padding: 0;
+            margin: 0; 
+        }
+    	canvas{ 
+            background: #FFFAFA;
+            display: block;
+            margin: 50px auto; 
+        }
+    </style>
+</head>
+<body>
+    <br/><br/>
+    <center><h1>My First Game - By Rahul Semwal</h1></center>
+    <!--<canvas id="myCanvas" width="480" height="320"></canvas>
+-->
+    <canvas id="myCanvas" width="700" height="500"></canvas>
+</body>
+</html>
+<script>
+	// JavaScript code goes here
+    var canvas = document.getElementById('myCanvas');
+    var ctx = canvas.getContext("2d");
+    var ballRadius,x, y,dx,dy,speed;
+//    var color = "#0095DD";
+//    var color = ['#CD5C5C','#F08080','#FA8072','#E9967A','#FFA07A'],colorIndex = 0;
+    var color = ['#AFEEEE','#7FFFD4','#40E0D0','#48D1CC','#00CED1'],colorIndex = 0;
+    var init = function(){
+        ballRadius = 10;
+        x = canvas.width/2;
+        y = canvas.height-30;
+        dx = 5; 
+        dy = -2;
+    }
+    var drawBall = function(){
+         try{
+            ctx.beginPath();
+            ctx.arc(x,y,ballRadius,0,Math.PI*2);
+            ctx.fillStyle = color[colorIndex];
+            ctx.fill();
+            ctx.closePath();
+        }
+        catch(e){
+            console.log('Error : Circle not draw => ' , e);
+        }
+        finally{
+            console.log('Circle drawn');
+        }
+    }
+    var boundaryCheck = function(){
+        var xChange = 0, yChange = 0;
+        if(x+dx > canvas.width-ballRadius || x+dx < ballRadius){
+            //dx = parseInt(Math.random() * (dx - 1) + 1);
+            //dx = -dx;
+            if(dx<0)
+                dx = parseInt(Math.random() * (5 - 2) + 2);
+            else dx = -parseInt(Math.random() * (5 - 2) + 2);
+            xChange = 1;
+        }
+            
+        if(y+dy > canvas.height-ballRadius || y+dy < ballRadius){
+            //dy = parseInt(Math.random() * (dy - 1) + 1);
+            //dy = -dy;
+            if(dy<0)
+                dy = parseInt(Math.random() * (5 - 2) + 2);
+            else dy = -parseInt(Math.random() * (5 - 2) + 2);
+            yChange=1
+        }
+        if(xChange || yChange){
+            colorIndex = parseInt(Math.random() * (5 - 1) + 1);
+            ctx.fillStyle = color;
+            ctx.fill();
+        }
+            
+    }
+    var draw = function(){
+            //ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawBall();
+            boundaryCheck();
+            x = x + dx;
+            y = y + dy;
+    }
+    //Key Starter
+    init();
+    setInterval(draw,10);
+</script>
