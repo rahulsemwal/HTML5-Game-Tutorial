@@ -28,6 +28,15 @@
     var ctx = canvas.getContext("2d");
     var ballRadius,x, y,dx,dy;
 	var paddleX,paddleWidth,rightPressed,leftPressed;
+	var bricks = [], brickProperties = {
+		'brickRowCount':0,
+		'brickColumnCount':0, 
+		'brickWidth':0,
+		'brickHeight':0,
+		'brickPadding':0,
+		'brickOffsetTop':0,
+		'brickOffsetLeft':0
+	};
     var init = function(){
         ballRadius = 10;
         x = canvas.width/2;
@@ -38,9 +47,44 @@
 		paddleX = (canvas.width - paddleWidth)/2; 
 		rightPressed = false;
 		leftPressed = false;
+		(function brickInit(){
+			brickProperties = {
+				'brickRowCount':3,
+				'brickColumnCount':5, 
+				'brickWidth':75,//default
+				'brickHeight':20,
+				'brickPadding':10,
+				'brickOffsetTop':30,
+				'brickOffsetLeft':30
+			};
+			brickProperties.brickWidth = (canvas.width - brickProperties.brickOffsetLeft - brickProperties.brickOffsetTop - (4*brickProperties.brickPadding))/5;//for flexible layout of canvas
+			//innitialize brick object inside brick[] object
+			for(var c=0;c<brickProperties.brickColumnCount;c++){
+			//column iteration first
+				bricks[c] = [];
+				for(var r=0;r<brickProperties.brickRowCount;r++){
+				//Row iteration second
+					bricks[c][r] = {'x':0,'y':0}
+				}
+			}
+		})()
     }
     init();
 	var drawBricks = function(){
+		for(var c=0;c<brickProperties.brickColumnCount;c++){
+			//column iteration first
+				for(var r=0;r<brickProperties.brickRowCount;r++){
+				//Row iteration second
+					var brickX = (c*(brickProperties.brickWidth+brickProperties.brickPadding)+brickProperties.brickOffsetLeft);
+					var brickY = (r*(brickProperties.brickHeight+brickProperties.brickPadding)+brickProperties.brickOffsetTop);
+					bricks[c][r] = {'x':brickX,'y':brickY};
+					ctx.beginPath();
+					ctx.rect(brickX,brickY,brickProperties.brickWidth,brickProperties.brickHeight);
+					ctx.fillStyle = "#0095DD";
+					ctx.fill();
+					ctx.closePath();
+				}
+			}
 		
 	}
 	var keyDownHandler = function(e){
@@ -103,6 +147,7 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             drawBall();
 			drawPaddle();
+			drawBricks();
             boundaryCheck();
             x = x + dx;
             y = y + dy;
