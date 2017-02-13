@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Gamedev - Mouse Control Detection</title>
+    <style>
+    	*{
+            padding: 0;
+            margin: 0;
+        }
+    	canvas{
+            background: #eee;
+            display: block;
+            margin: 50px auto;
+        }
+    </style>
+</head>
+<body>
+    <br/><br/>
+    <center><h1>Gamedev - Mouse Control - By Rahul Semwal</h1></center>
+    <canvas id="myCanvas" width="480" height="320"></canvas>
+</body>
+</html>
+<script>
+	'use strict'
+	// JavaScript code goes here
+    var canvas = document.getElementById('myCanvas');
+    var ctx = canvas.getContext("2d");
+    var ballRadius,x, y,dx,dy;
+	var paddleX,paddleWidth,rightPressed,leftPressed;
+	var bricks = [], brickProperties = {
+		'brickRowCount':0,
+		'brickColumnCount':0,
+		'brickWidth':0,
+		'brickHeight':0,
+		'brickPadding':0,
+		'brickOffsetTop':0,
+		'brickOffsetLeft':0
+	};
+	var score = 0;
+    var init = function(){
+        ballRadius = 10;
+        x = canvas.width/2;
+        y = canvas.height-30;
+        dx = 2;
+        dy = -2;
+		paddleWidth = 75;
+		paddleX = (canvas.width - paddleWidth)/2;
+		rightPressed = false;
+		leftPressed = false;
+		(function brickInit(){
+			brickProperties = {
+				'brickRowCount':3,
+				'brickColumnCount':5,
+				'brickWidth':75,//default
+				'brickHeight':20,
+				'brickPadding':10,
+				'brickOffsetTop':30,
+				'brickOffsetLeft':30
+			};
+			brickProperties.brickWidth = (canvas.width - brickProperties.brickOffsetLeft - brickProperties.brickOffsetTop - (4*brickProperties.brickPadding))/5;//for flexible layout of canvas
+			//innitialize brick object inside brick[] object
+			for(var c=0;c<brickProperties.brickColumnCount;c++){
+			//column iteration first
+				bricks[c] = [];
+				for(var r=0;r<brickProperties.brickRowCount;r++){
+				//Row iteration second
+					bricks[c][r] = {'x':0,'y':0,'status':1};
+				}
+			}
+
+		})();
+    }
+    init();
+	var keyDownHandler = function(e){
+		if(39 == e.keyCode){
+			//right key pressed
+			rightPressed = true;
+		}
+		if(37 == e.keyCode){
+			//left key pressed
+			leftPressed = true;
+		}
+	}
+	var keyUpHandler = function(e){
+		if(39 == e.keyCode){
+			//right key released
+			rightPressed = false;
+		}
+		if(37 == e.keyCode){
+			//left key released
+			leftPressed = false;
+		}
+	}
+  var mouseUpHandler = function(e){
+    //handle horizontal movement of mouse with paddle
+    var relativeX = e.clientX - canvas.offsetLeft;//e.clientX (x pos of mouse pointer),canvas.offsetLeft(x pos of canvas left offset)
+    if(relativeX > 0 && relativeX < canvas.width){//checking horizontal boundaries of pointer in b/w canvas horizontal boundaries
+      paddleX = relativeX - paddleWidth/2;//drag paddle X pos so that pointer sync with paddle mid pos
+    }
+  }
+	var drawScore = function(){
+		ctx.beginPath();
+		ctx.font = "14px Arial"
+		ctx.fillStyle = "#0095DD";
+		ctx.fillText("Score: "+score,8,20);
+		ctx.closePath();
+	}
+	var drawBricks = function(){
+		for(var c=0;c<brickProperties.brickColumnCount;c++){
+			//column iteration first
+				for(var r=0;r<brickProperties.brickRowCount;r++){
+				//Row iteration second
+					if(1 == bricks[c][r].status){
+						var brickX = (c*(brickProperties.brickWidth+brickProperties.brickPadding)+brickProperties.brickOffsetLeft);
+						var brickY = (r*(brickProperties.brickHeight+brickProperties.brickPadding)+brickProperties.brickOffsetTop);
+						bricks[c][r].x = brickX;
+						bricks[c][r].y = brickY;
+						ctx.beginPath();
+						ctx.rect(brickX,brickY,brickProperties.brickWidth,brickProperties.brickHeight);
+						ctx.fillStyle = "#0095DD";
+						ctx.fill();
+						ctx.closePath();
+					}
+				}
+			}
+
+	}
+	var drawPaddle = function(){
+		ctx.beginPath();
+		ctx.rect(paddleX,canvas.height-10,paddleWidth,10);
+		ctx.fillStyle = "#0095DD";
+		ctx.fill();
+		ctx.closePath();
+	}
+    var drawBall = function(){
+         try{
+            ctx.beginPath();
+            ctx.arc(x,y,ballRadius,0,Math.PI*2);
+            ctx.fillStyle = '#0095DD';
+            ctx.fill();
+            ctx.closePath();
+        }
+        catch(e){
+            console.log('Error : Circle not draw => ' , e);
+        }
+        finally{
+            console.log('Circle drawn');
+        }
+    }
+    var boundaryCheck = function(){
+		//ball boundary checking
+        if(x+dx > canvas.width-ballRadius || x+dx < ballRadius)
+            dx = -dx;
+        if(y+dy > canvas.height-ballRadius || y+dy < ballRadius)
+            dy = -dy;
+		//bottom pad boundary checking
+		if(rightPressed && paddleX+paddleWidth < canvas.width){
+			paddleX += 7;
+		}
+		if(leftPressed && paddleX > 0){
+			paddleX -= 7;
+		}
+    }
+	var collisionDetection = function(){
+		//collision detection between ball and bricks, that brick will hide and ball direction will change.
+		for(var c=0;c<brickProperties.brickColumnCount;c++){
+			for(var r=0;r<brickProperties.brickRowCount;r++){
+				var b = bricks[c][r];
+				if(1 == b.status){
+					if(x>b.x && x<(b.x+brickProperties.brickWidth) && y>b.y && y<(b.y+brickProperties.brickHeight)){
+						bricks[c][r].status = 0;//destroy/hide the brick
+						dy = -dy//change the y direction of ball
+						score++;//increasing score
+					}
+				}
+			}
+		}
+	}
+    var draw = function(){
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		drawBall();
+		drawPaddle();
+		drawBricks();
+		collisionDetection();
+		boundaryCheck();
+		drawScore();
+		x = x + dx;
+		y = y + dy;
+   }
+	document.addEventListener("keydown",keyDownHandler,false);
+	document.addEventListener("keyup",keyUpHandler,false);
+  document.addEventListener("mousemove",mouseUpHandler,false);
+    setInterval(draw,10);
+</script>
