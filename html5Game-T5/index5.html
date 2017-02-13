@@ -1,3 +1,7 @@
+<!------------------------
+***Please read the js code from bottom to up for better understanding.
+--------------------------
+-->
 <!DOCTYPE html>
 <html>
 <head>
@@ -17,7 +21,7 @@
 </head>
 <body>
     <br/><br/>
-    <center><h1>My First Game - By Rahul Semwal</h1></center>
+    <center><h1>Gamedev - Keyboard Control - By Rahul Semwal</h1></center>
     <canvas id="myCanvas" width="480" height="320"></canvas>
 </body>
 </html>
@@ -26,14 +30,47 @@
     var canvas = document.getElementById('myCanvas');
     var ctx = canvas.getContext("2d");
     var ballRadius,x, y,dx,dy;
+    var paddleHeight,paddleWidth,paddleX,paddleY;
+    var rightPressed = false, leftPressed = false;
     var init = function(){
         ballRadius = 10;
         x = canvas.width/2;
         y = canvas.height-30;
         dx = 2; 
         dy = -2;
+        paddleHeight = 10;
+        paddleWidth = 75;
+        paddleX = (canvas.width - paddleWidth)/2;
+        paddleY = (canvas.height - paddleHeight);
     }
     init();
+    var keyDownHandler = function(e){
+		if(39 == e.keyCode){
+			//right key pressed
+			rightPressed = true;
+		}
+		if(37 == e.keyCode){
+			//left key pressed
+			leftPressed = true;
+		}
+	}
+	var keyUpHandler = function(e){
+		if(39 == e.keyCode){
+			//right key pressed
+			rightPressed = false;
+		}
+		if(37 == e.keyCode){
+			//left key pressed
+			leftPressed = false;
+		}
+	}
+    var drawPaddle = function(){
+        ctx.beginPath();
+        ctx.rect(paddleX,paddleY,paddleWidth,paddleHeight);
+        ctx.fillStyle = "#0095DD";
+        ctx.fill();
+        ctx.closePath();
+    }
     var drawBall = function(){
          try{
             ctx.beginPath();
@@ -50,17 +87,28 @@
         }
     }
     var boundaryCheck = function(){
+		//ball boundary checking
         if(x+dx > canvas.width-ballRadius || x+dx < ballRadius)
             dx = -dx;
         if(y+dy > canvas.height-ballRadius || y+dy < ballRadius)
             dy = -dy;
+		//bottom pad boundary checking	
+		if(rightPressed && paddleX+paddleWidth < canvas.width){
+			paddleX += 7;
+		}
+		if(leftPressed && paddleX > 0){
+			paddleX -= 7;
+		}	
     }
     var draw = function(){
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             drawBall();
+            drawPaddle();
             boundaryCheck();
             x = x + dx;
             y = y + dy;
    }
+    document.addEventListener("keydown",keyDownHandler,false);
+	document.addEventListener("keyup",keyUpHandler,false);
     setInterval(draw,10);
 </script>
