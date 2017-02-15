@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>Gamedev - Keyboard Control</title>
+    <title>Gamedev - Collision Showcase</title>
     <style>
     	*{
             padding: 0;
@@ -17,7 +17,7 @@
 </head>
 <body>
     <br/><br/>
-    <center><h1>My First Game - By Rahul Semwal</h1></center>
+    <center><h1>Gamedev - Collision Showcase - By Rahul Semwal</h1></center>
     <canvas id="myCanvas" width="480" height="320"></canvas>
 </body>
 </html>
@@ -26,6 +26,8 @@
     var canvas = document.getElementById('myCanvas');
     var ctx = canvas.getContext("2d");
     var ballRadius,x, y,dx,dy;
+//    var color = ['#AFEEEE','#7FFFD4','#40E0D0','#48D1CC','#00CED1'],colorIndex = 0;
+    var color = ['red','green','yellow','white','blue'],colorIndex = 0;
     var init = function(){
         ballRadius = 10;
         x = canvas.width/2;
@@ -36,9 +38,11 @@
     init();
     var drawBall = function(){
          try{
+            colorIndex = parseInt(Math.random() * (5 - 1) + 1); 
             ctx.beginPath();
             ctx.arc(x,y,ballRadius,0,Math.PI*2);
-            ctx.fillStyle = '#0095DD';
+//            ctx.fillStyle = '#0095DD';
+            ctx.fillStyle = color[colorIndex];
             ctx.fill();
             ctx.closePath();
         }
