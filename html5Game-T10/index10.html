@@ -23,6 +23,17 @@
 			top: 72px;
 			background: rgba(14, 14, 14, 0.84);
 		}
+		.myCanvasOverlay .controls{
+			color: white;
+			font-size: xx-large;
+			width: 22%;
+			margin: 110px auto;
+			padding: 10px;
+			cursor: pointer;
+		}
+		.myCanvasOverlay .controls .play{
+			width: 100px;
+		}
     </style>
 </head>
 <body>
@@ -30,15 +41,16 @@
     <center><h1>Gamedev - Finishing The Game - By Rahul Semwal</h1></center>
     <canvas id="myCanvas" width="480" height="320"></canvas>
     <div class="myCanvasOverlay">
-		<center><button onclick="startGame()">Play</button><button onclick="stopGame()">Stop</button></center>
+		<div class="controls" onclick="startGame()"><img class="play"src="image/play.svg"/></div>
 	</div>
-	
+	<center>Hit Spacebar for Play/Pause</center>
 </body>
 </html>
 <script>
 	'use strict'
 	// JavaScript code goes here
     var startKey;
+	var pause;
     var canvas = document.getElementById('myCanvas');
     var ctx = canvas.getContext("2d");
     var ballRadius,x, y,dx,dy;
@@ -55,6 +67,7 @@
     var score = 0;
     var lives = 3;
     var init = function(){
+		pause = true;
         ballRadius = 10;
         x = canvas.width/2;
         y = canvas.height-30;
@@ -87,7 +100,6 @@
 
         })();
     }
-    //init();
     var keyDownHandler = function(e){
         if(39 == e.keyCode){
             //right key pressed
@@ -97,6 +109,13 @@
             //left key pressed
             leftPressed = true;
         }
+		if(32 == e.keyCode){
+			//spacebar pressed for play/pause
+			if(undefined != pause)
+				pauseGame();
+			else startGame();
+				
+		}
     }
     var keyUpHandler = function(e){
         if(39 == e.keyCode){
@@ -225,12 +244,16 @@
     document.addEventListener("keyup",keyUpHandler,false);
     document.addEventListener("mousemove",mouseUpHandler,false);
     var startGame = function(){
-		init();
+		if(!pause){
+			init();
+		}
         startKey = setInterval(draw,10);
 		document.getElementsByClassName('myCanvasOverlay')[0].style.display = "none";
     }
 	var pauseGame = function(){
-		clearInterval(startKey);
+		stopGame();
+		pause = !pause;
+		
 	}
     var stopGame = function(){
         clearInterval(startKey);
