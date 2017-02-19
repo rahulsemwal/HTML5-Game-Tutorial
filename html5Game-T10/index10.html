@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>Gamedev - Mouse Control Detection</title>
+    <title>Gamedev - Finishing The Game Detection</title>
     <style>
     	*{
             padding: 0;
@@ -13,12 +13,26 @@
             display: block;
             margin: 50px auto;
         }
+		.myCanvasOverlay{
+			width:480px;
+			height:320px;
+			margin: 50px auto;
+			position:absolute;
+			left: 0;
+			right: 0;
+			top: 72px;
+			background: rgba(14, 14, 14, 0.84);
+		}
     </style>
 </head>
 <body>
     <br/><br/>
-    <center><h1>Gamedev - Mouse Control - By Rahul Semwal</h1></center>
+    <center><h1>Gamedev - Finishing The Game - By Rahul Semwal</h1></center>
     <canvas id="myCanvas" width="480" height="320"></canvas>
+    <div class="myCanvasOverlay">
+		<center><button onclick="startGame()">Play</button><button onclick="stopGame()">Stop</button></center>
+	</div>
+	
 </body>
 </html>
 <script>
@@ -73,7 +87,7 @@
 
         })();
     }
-    init();
+    //init();
     var keyDownHandler = function(e){
         if(39 == e.keyCode){
             //right key pressed
@@ -154,8 +168,25 @@
         //ball boundary checking
         if(x+dx > canvas.width-ballRadius || x+dx < ballRadius)
             dx = -dx;
-        if(y+dy > canvas.height-ballRadius || y+dy < ballRadius)
+        /*
+		if(y+dy > canvas.height-ballRadius || y+dy < ballRadius)
             dy = -dy;
+		*/
+		if(y+dy < ballRadius){
+			dy = -dy;
+		}
+		if(y+dy > canvas.height-ballRadius){
+			if(x+dx > paddleX && x+dx < paddleX + paddleWidth){
+				dy = -dy;
+			}
+			else{
+				dy = -dy;
+				console.log("Game Over");
+				stopGame();
+			}
+			
+		}
+		
         //bottom pad boundary checking
         if(rightPressed && paddleX+paddleWidth < canvas.width){
             paddleX += 7;
@@ -194,11 +225,17 @@
     document.addEventListener("keyup",keyUpHandler,false);
     document.addEventListener("mousemove",mouseUpHandler,false);
     var startGame = function(){
+		init();
         startKey = setInterval(draw,10);
+		document.getElementsByClassName('myCanvasOverlay')[0].style.display = "none";
     }
+	var pauseGame = function(){
+		clearInterval(startKey);
+	}
     var stopGame = function(){
-        clearInterval(str);
+        clearInterval(startKey);
+		document.getElementsByClassName('myCanvasOverlay')[0].style.display = "block";
     }
-    startGame();
+    //startGame();
     
 </script>
