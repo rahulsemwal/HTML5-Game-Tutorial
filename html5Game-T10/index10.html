@@ -23,14 +23,27 @@
 			top: 72px;
 			background: rgba(14, 14, 14, 0.84);
 		}
-		.myCanvasOverlay .controls{
-			color: white;
-			font-size: xx-large;
-			width: 22%;
-			margin: 110px auto;
-			padding: 10px;
-			cursor: pointer;
+		.myCanvasOverlay .fry-pan{
+            position:static;
+        }
+        .myCanvasOverlay .fry-pan>.controls{
+			 color: white;
+            font-size: xx-large;
+            width: 100%;
+            margin: 110px auto;
+            /* padding: 10px; */
+            cursor: pointer;
+            text-align: center;
 		}
+        .myCanvasOverlay .fry-pan>.msg{
+            text-align: center;
+            color: white;
+            font-size: 20px;
+            position: absolute;
+            width: 100%;
+            top: 50px;
+                
+        }
 		.myCanvasOverlay .controls .play{
 			width: 100px;
 		}
@@ -41,7 +54,10 @@
     <center><h1>Gamedev - Finishing The Game - By Rahul Semwal</h1></center>
     <canvas id="myCanvas" width="480" height="320"></canvas>
     <div class="myCanvasOverlay">
-		<div class="controls" onclick="startGame()"><img class="play"src="image/play.svg"/></div>
+        <div class="fry-pan">
+            <p class="msg"></p>    
+            <div class="controls" onclick="playPauseGame()"><img class="play"src="image/play.svg"/></div>
+        </div>
 	</div>
 	<center>Hit Spacebar for Play/Pause</center>
 </body>
@@ -51,6 +67,7 @@
 	// JavaScript code goes here
     var startKey;
 	var pause;
+    var myCanvasOverlay = document.getElementsByClassName('myCanvasOverlay');
     var canvas = document.getElementById('myCanvas');
     var ctx = canvas.getContext("2d");
     var ballRadius,x, y,dx,dy;
@@ -67,7 +84,8 @@
     var score = 0;
     var lives = 3;
     var init = function(){
-		pause = true;
+        myCanvasOverlay[0].getElementsByClassName('fry-pan')[0].getElementsByClassName('msg')[0].innerHTML = "";
+		pause = false;
         ballRadius = 10;
         x = canvas.width/2;
         y = canvas.height-30;
@@ -109,13 +127,6 @@
             //left key pressed
             leftPressed = true;
         }
-		if(32 == e.keyCode){
-			//spacebar pressed for play/pause
-			if(undefined != pause)
-				pauseGame();
-			else startGame();
-				
-		}
     }
     var keyUpHandler = function(e){
         if(39 == e.keyCode){
@@ -126,6 +137,10 @@
             //left key released
             leftPressed = false;
         }
+        if(32 == e.keyCode){
+			//spacebar pressed for play/pause
+			playPauseGame();
+		}
     }
     var mouseUpHandler = function(e){
         //handle horizontal movement of mouse with paddle
@@ -201,7 +216,7 @@
 			else{
 				dy = -dy;
 				console.log("Game Over");
-				stopGame();
+				gameOver();
 			}
 			
 		}
@@ -244,21 +259,35 @@
     document.addEventListener("keyup",keyUpHandler,false);
     document.addEventListener("mousemove",mouseUpHandler,false);
     var startGame = function(){
-		if(!pause){
-			init();
-		}
+		init();
         startKey = setInterval(draw,10);
 		document.getElementsByClassName('myCanvasOverlay')[0].style.display = "none";
     }
-	var pauseGame = function(){
-		stopGame();
-		pause = !pause;
-		
-	}
+	var playPauseGame = function(){
+        if(undefined == pause){
+            startGame();
+            return;
+        }
+        pause = !pause;
+        if(false == pause){
+          startKey = setInterval(draw,10);
+		  myCanvasOverlay[0].style.display = "none";  
+        }
+        else{
+            stopGame();
+        }
+    }
     var stopGame = function(){
         clearInterval(startKey);
-		document.getElementsByClassName('myCanvasOverlay')[0].style.display = "block";
+		myCanvasOverlay[0].style.display = "block";
     }
+    var gameOver = function(){
+        stopGame();
+        myCanvasOverlay[0].getElementsByClassName('fry-pan')[0].getElementsByClassName('msg')[0].innerHTML = "GAME OVER";
+        pause = undefined;
+        
+    }
+    
     //startGame();
     
 </script>
