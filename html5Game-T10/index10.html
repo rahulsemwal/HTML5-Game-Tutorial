@@ -81,11 +81,12 @@
         'brickOffsetTop':0,
         'brickOffsetLeft':0
     };
-    var score = 0;
+    var score;
     var lives = 3;
     var init = function(){
         myCanvasOverlay[0].getElementsByClassName('fry-pan')[0].getElementsByClassName('msg')[0].innerHTML = "";
 		pause = false;
+		score = 0;
         ballRadius = 10;
         x = canvas.width/2;
         y = canvas.height-30;
